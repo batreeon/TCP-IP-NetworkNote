@@ -8,9 +8,11 @@ void error_handling(char *message);
 
 int main(int argc, char *argv[])
 {
+    // 套接字描述符
     int serv_sock;
     int clnt_sock;
 
+    // 地址（ip和端口）
     struct sockaddr_in serv_addr;
     struct sockaddr_in clnt_addr;
     socklen_t clnt_addr_size;
