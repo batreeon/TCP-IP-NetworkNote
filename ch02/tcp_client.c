@@ -34,6 +34,7 @@ int main(int argc, char *argv[])
     if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) == -1)
         error_handling("connect() error!");
     //当read函数返回0的时候条件为假，跳出循环。
+    // 每次读一个字节
     while (read_len = read(sock, &message[idx++], 1))
     {
         if (read_len == -1)
