@@ -14,6 +14,7 @@ char *calc(char *s)
     int len = strlen(s), i;
     int n = 0;
     for (i = 0; i < len; i++)
+    {
         if (s[i] == ' ')
         {
             i++;
@@ -21,6 +22,9 @@ char *calc(char *s)
         }
         else
             n = n * 10 + (s[i] - '0');
+    }
+
+    // 创建数组，存放操作数
     int *num = malloc(sizeof(int) * n);
     int tot = 0, x = 0;
 
@@ -58,6 +62,7 @@ char *calc(char *s)
     sprintf(res, "%d", ans);
     return res;
 }
+
 int main(int argc, char *argv[])
 {
     int serv_sock, clnt_sock;
