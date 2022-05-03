@@ -6,7 +6,7 @@
 #include <sys/socket.h>
 #define BUF_SIZE 1024
 #define RLT_SIZE 4 //字节大小数
-#define OPSZ 4
+#define OPSZ 4 
 void error_handling(char *message);
 
 int main(int argc, char *argv[])
