@@ -55,6 +55,7 @@ int main(int argc, char *argv[])
     close(serv_sock);
     return 0;
 }
+// 直接传数组，计算方便点。
 int calculate(int opnum, int opnds[], char op)
 {
     int result = opnds[0], i;
