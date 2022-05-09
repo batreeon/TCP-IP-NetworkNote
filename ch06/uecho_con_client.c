@@ -31,6 +31,7 @@ int main(int argc, char *argv[])
     serv_adr.sin_addr.s_addr = inet_addr(argv[1]);
     serv_adr.sin_port = htons(atoi(argv[2]));
 
+    // 使用connect函数为套接字绑定服务端ip和端口号
     connect(sock, (struct sockaddr *)&serv_adr, sizeof(serv_adr));
 
     while (1)

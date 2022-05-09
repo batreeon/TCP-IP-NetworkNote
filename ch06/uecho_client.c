@@ -26,6 +26,7 @@ int main(int argc, char *argv[])
     if (sock == -1)
         error_handling("socket() error");
 
+    // 服务端ip和端口号
     memset(&serv_adr, 0, sizeof(serv_adr));
     serv_adr.sin_family = AF_INET;
     serv_adr.sin_addr.s_addr = inet_addr(argv[1]);
