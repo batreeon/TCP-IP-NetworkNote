@@ -12,6 +12,7 @@ int main(int argc, char *argv[])
     int state;
 
     optlen = sizeof(sock_type);
+    // 建立套接字
     tcp_sock = socket(PF_INET, SOCK_STREAM, 0);
     udp_sock = socket(PF_INET, SOCK_DGRAM, 0);
     printf("SOCK_STREAM: %d\n", SOCK_STREAM);

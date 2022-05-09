@@ -31,6 +31,7 @@ int main(int argc, char *argv[])
     if (state)
         error_handling("getsockopt() error");
 
+    // 为什么结果是1024 * 6
     printf("Input buffer size: %d \n", rcv_buf);
     printf("Output buffer size: %d \n", snd_buf);
 
