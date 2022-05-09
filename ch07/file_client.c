@@ -23,6 +23,7 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
+    // 新创建的文件
     fp = fopen("receive.cpp", "wb");
     sd = socket(PF_INET, SOCK_STREAM, 0);
 
@@ -34,6 +35,7 @@ int main(int argc, char *argv[])
     connect(sd, (struct sockaddr *)&serv_adr, sizeof(serv_adr));
 
     while ((read_cnt = read(sd, buf, BUF_SIZE)) != 0)
+        // 写文件
         fwrite((void *)buf, 1, read_cnt, fp);
 
     puts("Received file data");

@@ -24,6 +24,7 @@ int main(int argc, char *argv[])
         exit(1);
     }
     fp = fopen("file_server.c", "rb");
+    // 建立tcp套接字
     serv_sd = socket(PF_INET, SOCK_STREAM, 0);
 
     memset(&serv_adr, 0, sizeof(serv_adr));
@@ -31,6 +32,7 @@ int main(int argc, char *argv[])
     serv_adr.sin_addr.s_addr = htonl(INADDR_ANY);
     serv_adr.sin_port = htons(atoi(argv[1]));
 
+    // 为套接字绑定ip和端口
     bind(serv_sd, (struct sockaddr *)&serv_adr, sizeof(serv_adr));
     listen(serv_sd, 5);
 
@@ -50,6 +52,7 @@ int main(int argc, char *argv[])
         write(clnt_sd, buf, BUF_SIZE);
     }
 
+    // 关闭输出流，不可以写但还可以读
     shutdown(clnt_sd, SHUT_WR);
     read(clnt_sd, buf, BUF_SIZE);
     printf("Message from client: %s \n", buf);
