@@ -46,6 +46,7 @@ int main(int argc, char *argv[])
     pid = fork();
     if (pid == 0)
     {
+        // 读取并写入文件
         FILE *fp = fopen("echomsg.txt", "wt");
         char msgbuf[BUF_SIZE];
         int i, len;
