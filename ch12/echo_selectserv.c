@@ -25,6 +25,7 @@ int main(int argc, char *argv[])
         printf("Usage : %s <port>\n", argv[0]);
         exit(1);
     }
+    // 创建套接字
     serv_sock = socket(PF_INET, SOCK_STREAM, 0);
     memset(&serv_adr, 0, sizeof(serv_adr));
     serv_adr.sin_family = AF_INET;
@@ -48,6 +49,7 @@ int main(int argc, char *argv[])
 
         if ((fd_num = select(fd_max + 1, &cpy_reads, 0, 0, &timeout)) == -1) //开始监视,每次重新监听
             break;
+        // 超时返回0
         if (fd_num == 0)
             continue;
 
@@ -60,12 +62,13 @@ int main(int argc, char *argv[])
                     adr_sz = sizeof(clnt_adr);
                     clnt_sock = accept(serv_sock, (struct sockaddr *)&clnt_adr, &adr_sz);
 
+                    // select传入的是cpy_reads,这里修改的reads，怎么影响的？？？
                     FD_SET(clnt_sock, &reads); //注册一个clnt_sock
                     if (fd_max < clnt_sock)
                         fd_max = clnt_sock;
                     printf("Connected client: %d \n", clnt_sock);
                 }
-                else //不是服务端套接字时
+                else //不是服务端套接字时     上一个分支已经注册了客户端套接字描述符
                 {
                     str_len = read(i, buf, BUF_SIZE); //i指的是当前发起请求的客户端
                     if (str_len == 0)

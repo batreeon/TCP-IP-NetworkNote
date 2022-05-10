@@ -12,6 +12,7 @@ int main(int argc, char *argv[])
     struct timeval timeout;
 
     FD_ZERO(&reads);   //初始化变量
+    // 文件描述符0，对应标准输入
     FD_SET(0, &reads); //将文件描述符0对应的位设置为1
 
     /*
