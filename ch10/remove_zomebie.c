@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include <sys/wait.h>
+// 利用子进程终止产生SIGINT信号，使用信号处理消除僵尸进程
 
 void read_childproc(int sig)
 {
@@ -26,7 +27,7 @@ int main(int argc, char *argv[])
 
     pid = fork();
     if (pid == 0) //子进程执行阶段
-    {
+    {   
         puts("Hi I'm child process");
         sleep(10);
         return 12;
@@ -38,7 +39,8 @@ int main(int argc, char *argv[])
         if (pid == 0)
         {
             puts("Hi! I'm child process");
-            sleep(10);
+            // 当两个都sleep(10)的时候，居然只能收到一个SIGINT信号
+            sleep(12);
             exit(24);
         }
         else

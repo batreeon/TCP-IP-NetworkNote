@@ -23,6 +23,7 @@ int main(int argc, char *argv[])
     for (i = 0; i < 3; i++)
     {
         puts("wait...");
+        // 睡眠状态会因为信号而终止，并且不会再进入睡眠状态
         sleep(100);
     }
     return 0;

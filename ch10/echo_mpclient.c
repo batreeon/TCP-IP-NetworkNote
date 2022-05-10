@@ -31,6 +31,7 @@ int main(int argc, char *argv[])
         error_handling("connect() error!");
 
     pid = fork();
+    // 读写分离
     if (pid == 0)
         write_routine(sock, buf);
     else
@@ -59,6 +60,7 @@ void write_routine(int sock, char *buf)
         fgets(buf, BUF_SIZE, stdin);
         if (!strcmp(buf, "q\n") || !strcmp(buf, "Q\n"))
         {
+            // 关闭输出流，通知服务端断开了
             shutdown(sock, SHUT_WR); //向服务器端传递 EOF,因为fork函数复制了文件描述度，所以通过1次close调用不够
             return;
         }

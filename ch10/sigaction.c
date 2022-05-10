@@ -8,6 +8,13 @@ void timeout(int sig)
         puts("Time out!");
     alarm(2);
 }
+void keycontrol(int sig)
+{
+    if (sig == SIGINT)
+    {
+        puts("CTRL+C pressed!");
+    }
+}
 
 int main(int argc, char *argv[])
 {
@@ -17,6 +24,12 @@ int main(int argc, char *argv[])
     sigemptyset(&act.sa_mask);   //将 sa_mask 函数的所有位初始化成0
     act.sa_flags = 0;            //sa_flags 同样初始化成 0
     sigaction(SIGALRM, &act, 0); //注册 SIGALRM 信号的处理器。
+
+    struct sigaction act1;
+    act1.sa_handler = keycontrol;
+    sigemptyset(&act1.sa_mask);
+    act1.sa_flags = 0;
+    sigaction(SIGINT, &act1, 0);
 
     alarm(2); //2 秒后发生 SIGALRM 信号
 

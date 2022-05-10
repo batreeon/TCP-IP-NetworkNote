@@ -9,6 +9,7 @@
 
 #define BUF_SIZE 30
 void error_handling(char *message);
+// 信号处理函数
 void read_childproc(int sig);
 
 int main(int argc, char *argv[])
@@ -30,6 +31,7 @@ int main(int argc, char *argv[])
     sigemptyset(&act.sa_mask);
     act.sa_flags = 0;
     state = sigaction(SIGCHLD, &act, 0);         //注册信号处理器,把成功的返回值给 state
+
     serv_sock = socket(PF_INET, SOCK_STREAM, 0); //创建服务端套接字
     memset(&serv_adr, 0, sizeof(serv_adr));
     serv_adr.sin_family = AF_INET;
@@ -57,7 +59,7 @@ int main(int argc, char *argv[])
         }
         if (pid == 0) //子进程运行区域,此部分向客户端提供回声服务
         {
-            close(serv_sock); //关闭服务器套接字，因为从父进程传递到了子进程
+            close(serv_sock); //关闭服务器套接字，因为从父进程传递到了子进程    复制了一份
             while ((str_len = read(clnt_sock, buf, BUFSIZ)) != 0)
                 write(clnt_sock, buf, str_len);
 

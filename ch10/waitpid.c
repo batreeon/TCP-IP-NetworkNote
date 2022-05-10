@@ -9,6 +9,7 @@ int main(int argc, char *argv[])
 
     if (pid == 0)
     {
+        // 子进程
         sleep(15); //用 sleep 推迟子进程的执行
         return 24;
     }
