@@ -2,6 +2,7 @@
 #include <sys/uio.h>
 #define BUF_SIZE 100
 
+// 从标准输入读取数据，写入buf中
 int main(int argc, char *argv[])
 {
     struct iovec vec[2];

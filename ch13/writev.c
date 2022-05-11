@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <sys/uio.h>
 
+// 将数据写到标准输出
 int main(int argc, char *argv[])
 {
     struct iovec vec[2];

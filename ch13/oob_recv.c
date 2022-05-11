@@ -26,6 +26,7 @@ int main(int argc, char *argv[])
         printf("Usage : %s <port>\n", argv[0]);
         exit(1);
     }
+    // 信号处理
     act.sa_handler = urg_handler;
     sigemptyset(&act.sa_mask);
     act.sa_flags = 0;
@@ -49,6 +50,7 @@ int main(int argc, char *argv[])
     while ((str_len = recv(recv_sock, buf, sizeof(buf), 0)) != 0)
     {
         if (str_len == -1)
+        // 失败
             continue;
         buf[str_len] = 0;
         puts(buf);
