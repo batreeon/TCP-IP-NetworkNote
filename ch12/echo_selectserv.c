@@ -53,6 +53,8 @@ int main(int argc, char *argv[])
         if (fd_num == 0)
             continue;
 
+        // 查找哪个文件描述符发生了期望的事件
+        // 这个每次需要遍历，太烦了
         for (i = 0; i < fd_max + 1; i++)
         {
             if (FD_ISSET(i, &cpy_reads)) //查找发生变化的套接字文件描述符
