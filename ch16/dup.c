@@ -7,7 +7,7 @@ int main(int argc, char *argv[])
     char str1[] = "Hi~ \n";
     char str2[] = "It's nice day~ \n";
 
-    cfd1 = dup(1);        //复制文件描述符 1
+    cfd1 = dup(1);        //复制文件描述符 1，标准输出？？
     cfd2 = dup2(cfd1, 7); //再次复制文件描述符,定为数值 7
 
     printf("fd1=%d , fd2=%d \n", cfd1, cfd2);

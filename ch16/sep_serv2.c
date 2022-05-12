@@ -17,6 +17,7 @@ int main(int argc, char *argv[])
     char buf[BUF_SIZE] = {
         0,
     };
+
     serv_sock = socket(PF_INET, SOCK_STREAM, 0);
     memset(&serv_adr, 0, sizeof(serv_adr));
     serv_adr.sin_family = AF_INET;
@@ -24,6 +25,7 @@ int main(int argc, char *argv[])
     serv_adr.sin_port = htons(atoi(argv[1]));
     bind(serv_sock, (struct sockaddr *)&serv_adr, sizeof(serv_adr));
     listen(serv_sock, 5);
+
     clnt_adr_sz = sizeof(clnt_adr);
     clnt_sock = accept(serv_sock, (struct sockaddr *)&clnt_adr, &clnt_adr_sz);
 
