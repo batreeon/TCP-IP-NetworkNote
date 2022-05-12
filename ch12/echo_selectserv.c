@@ -64,7 +64,8 @@ int main(int argc, char *argv[])
                     adr_sz = sizeof(clnt_adr);
                     clnt_sock = accept(serv_sock, (struct sockaddr *)&clnt_adr, &adr_sz);
 
-                    // select传入的是cpy_reads,这里修改的reads，怎么影响的？？？
+                    // select传入的是cpy_reads,这里修改的reads，怎么影响的
+                    // 哦哦哦，每次循环都要cpy_reads = reads的，每次复制reads是为了保存要监视的文件描述符，因为select未改变这个set，你如果不保存，就丢了
                     FD_SET(clnt_sock, &reads); //注册一个clnt_sock
                     if (fd_max < clnt_sock)
                         fd_max = clnt_sock;
