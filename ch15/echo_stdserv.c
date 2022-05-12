@@ -59,6 +59,7 @@ int main(int argc, char *argv[])
             fflush(writefp);
         }
 
+        // 关闭了两个FILE指针，就不需要关闭文件描述符了
         fclose(readfp);
         fclose(writefp);
     }

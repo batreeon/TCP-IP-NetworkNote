@@ -35,6 +35,7 @@ int main(int argc, char *argv[])
         error_handling("connect() error!");
     else
         puts("Connected...........");
+    // 将文件描述符转换为FILE指针
     readfp = fdopen(sock, "r");
     writefp = fdopen(sock, "w");
     while (1)
