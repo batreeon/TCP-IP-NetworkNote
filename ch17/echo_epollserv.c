@@ -38,10 +38,12 @@ int main(int argc, char *argv[])
     if (listen(serv_sock, 5) == -1)
         error_handling("listen() error");
 
+    // epoll例程
     epfd = epoll_create(EPOLL_SIZE); //可以忽略这个参数，填入的参数为操作系统参考
     ep_events = malloc(sizeof(struct epoll_event) * EPOLL_SIZE);
 
     event.events = EPOLLIN; //需要读取数据的情况
+    // 这一句的作用我不太理解的
     event.data.fd = serv_sock;
     epoll_ctl(epfd, EPOLL_CTL_ADD, serv_sock, &event); //例程epfd 中添加文件描述符 serv_sock，目的是监听 enevt 中的事件
 
@@ -56,6 +58,7 @@ int main(int argc, char *argv[])
 
         for (i = 0; i < event_cnt; i++)
         {
+            // 服务端有响应，那么就是有客户端对服务端发起请求了，将相应的客户端描述符加入监控
             if (ep_events[i].data.fd == serv_sock) //客户端请求连接时
             {
                 adr_sz = sizeof(clnt_adr);
@@ -76,6 +79,7 @@ int main(int argc, char *argv[])
                 }
                 else
                 {
+                    // 回声
                     write(ep_events[i].data.fd, buf, str_len);
                 }
             }

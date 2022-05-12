@@ -8,7 +8,7 @@
 #include <fcntl.h>
 #include <errno.h>
 
-#define BUF_SIZE 4 //缓冲区设置为 4 字节
+#define BUF_SIZE 2 //缓冲区设置为 4 字节
 #define EPOLL_SIZE 50
 void setnonblockingmode(int fd);
 void error_handling(char *message);
@@ -77,6 +77,7 @@ int main(int argc, char *argv[])
                 {
                     str_len = read(ep_events[i].data.fd, buf, BUF_SIZE);
                     if (str_len == 0)
+                    // 断开连接
                     {
                         epoll_ctl(epfd, EPOLL_CTL_DEL, ep_events[i].data.fd, NULL); //从epoll中删除套接字
                         close(ep_events[i].data.fd);
@@ -84,6 +85,7 @@ int main(int argc, char *argv[])
                         break;
                     }
                     else if (str_len < 0)
+                    // 出错
                     {
                         if (errno == EAGAIN) //read 返回-1 且 errno 值为 EAGAIN ，意味读取了输入缓冲的全部数据
                             break;

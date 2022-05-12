@@ -13,15 +13,15 @@ select 复用方法由来已久，因此，利用该技术后，无论如何优�
 - 调用 select 函数后常见的针对所有文件描述符的循环语句
 - 每次调用 select 函数时都需要向该函数传递监视对象信息
 
-上述两点可以从 [echo_selectserv.c](https://github.com/riba2534/TCP-IP-NetworkNote/blob/master/ch12/echo_selectserv.c) 得到确认，调用 select 函数后，并不是把发生变化的文件描述符单独集中在一起，而是通过作为监视对象的 fd_set 变量的变化，找出发生变化的文件描述符（54,56行），因此无法避免针对所有监视对象的循环语句。而且，作为监视对象的 fd_set 会发生变化，所以调用 select 函数前应该复制并保存原有信息，并在每次调用 select 函数时传递新的监视对象信息。
+上述两点可以从 [echo_selectserv.c](https://github.com/riba2534/TCP-IP-NetworkNote/blob/master/ch12/echo_selectserv.c) 得到确认，调用 select 函数后，并不是把发生变化的文件描述符单独集中在一起，而是通过作为监视对象的 fd_set 变量的变化，找出发生变化的文件描述符（54,56行），因此无法避免针对所有监视对象的循环语句。而且，***作为监视对象的 fd_set 会发生变化，所以调用 select 函数前应该复制并保存原有信息，并在每次调用 select 函数时传递新的监视对象信息***。
 
 select 性能上最大的弱点是：每次传递监视对象信息，准确的说，select 是监视套接字变化的函数。而套接字是操作系统管理的，所以 select 函数要借助操作系统才能完成功能。select 函数的这一缺点可以通过如下方式弥补：
 
 > 仅向操作系统传递一次监视对象，监视范围或内容发生变化时只通知发生变化的事项
 
-这样就无需每次调用 select 函数时都想操作系统传递监视对象信息，但是前提操作系统支持这种处理方式。Linux 的支持方式是 epoll ，Windows 的支持方式是 IOCP。
+这样就无需每次调用 select 函数时都向操作系统传递监视对象信息，但是前提操作系统支持这种处理方式。Linux 的支持方式是 epoll ，Windows 的支持方式是 IOCP。
 
-#### 17.1.2 select 也有有点
+#### 17.1.2 select 也有优点
 
 select 的兼容性比较高，这样就可以支持很多的操作系统，不受平台的限制，使用 select 函数满足以下两个条件：
 
@@ -43,7 +43,7 @@ select 的兼容性比较高，这样就可以支持很多的操作系统，不�
 
 select 函数中为了保存监视对象的文件描述符，直接声明了 fd_set 变量，但 epoll 方式下的操作系统负责保存监视对象文件描述符，因此需要向操作系统请求创建保存文件描述符的空间，此时用的函数就是 epoll_create 。
 
-此外，为了添加和删除监视对象文件描述符，select 方式中需要 FD_SET、FD_CLR 函数。但在 epoll 方式中，通过 epoll_ctl 函数请求操作系统完成。最后，select 方式下调用 select 函数等待文件描述符的变化，而 epoll_wait 调用 epoll_wait 函数。还有，select 方式中通过 fd_set 变量查看监视对象的状态变化，而 epoll 方式通过如下结构体 epoll_event 将发生变化的文件描述符单独集中在一起。
+此外，为了添加和删除监视对象文件描述符，select 方式中需要 FD_SET、FD_CLR 函数。但在 epoll 方式中，通过 epoll_ctl 函数请求操作系统完成。最后，select 方式下调用 select 函数等待文件描述符的变化，而 epoll 调用 epoll_wait 函数。还有，select 方式中通过 fd_set 变量查看监视对象的状态变化，而 epoll 方式通过如下结构体 epoll_event 将发生变化的文件描述符单独集中在一起。
 
 ```c
 struct epoll_event
@@ -60,7 +60,7 @@ typedef union epoll_data {
 
 ```
 
-声明足够大的 epoll_event 结构体数组候，传递给 epoll_wait 函数时，发生变化的文件描述符信息将被填入数组。因此，无需像 select 函数那样针对所有文件描述符进行循环。
+声明足够大的 epoll_event 结构体数组后，传递给 epoll_wait 函数时，发生变化的文件描述符信息将被填入数组。因此，无需像 select 函数那样针对所有文件描述符进行循环。
 
 #### 17.1.4 epoll_create
 
@@ -81,7 +81,7 @@ size：epoll 实例的大小
 */
 ```
 
-调用 epoll_create 函数时创建的文件描述符保存空间称为「epoll 例程」，但有些情况下名称不同，需要稍加注意。通过参数 size 传递的值决定 epoll 例程的大小，但该值只是向操作系统提出的建议。换言之，size 并不用来决定 epoll 的大小，而仅供操作系统参考。
+调用 epoll_create 函数时创建的***文件描述符保存空间称为「epoll 例程」***，但有些情况下名称不同，需要稍加注意。通过参数 size 传递的值决定 epoll 例程的大小，但该值只是向操作系统提出的建议。换言之，size 并不用来决定 epoll 的大小，而仅供操作系统参考。
 
 > Linux 2.6.8 之后的内核将完全传入 epoll_create 函数的 size 函数，因此内核会根据情况调整 epoll 例程大小。但是本书程序并没有忽略 size
 
@@ -131,7 +131,7 @@ epoll_ctl(A,EPOLL_CTL_DEL,B,NULL);
 - EPOLL_CTL_DEL：从 epoll 例程中删除文件描述符
 - EPOLL_CTL_MOD：更改注册的文件描述符的关注事件发生情况
 
-epoll_event 结构体用于保存事件的文件描述符结合。但也可以在 epoll 例程中注册文件描述符时，用于注册关注的事件。该函数中 epoll_event 结构体的定义并不显眼，因此通过掉英语剧说明该结构体在 epoll_ctl 函数中的应用。
+epoll_event 结构体用于保存事件的文件描述符结合。但也可以在 epoll 例程中注册文件描述符时，用于注册关注的事件。该函数中 epoll_event 结构体的定义并不显眼，因此通过调用语句说明该结构体在 epoll_ctl 函数中的应用。
 
 ```c
 struct epoll_event event;
@@ -142,11 +142,11 @@ epoll_ctl(epfd,EPOLL_CTL_ADD,sockfd,&event);
 ...
 ```
 
-上述代码将 epfd 注册到 epoll 例程 epfd 中，并在需要读取数据的情况下产生相应事件。接下来给出 epoll_event 的成员 events 中可以保存的常量及所指的事件类型。
+上述代码将 sockfd 注册到 epoll 例程 epfd 中，并在需要读取数据的情况下产生相应事件。接下来给出 epoll_event 的成员 events 中可以保存的常量及所指的事件类型。
 
 - EPOLLIN：需要读取数据的情况
 - EPOLLOUT：输出缓冲为空，可以立即发送数据的情况
-- EPOLLPRI：收到 OOB 数据的情况
+- EPOLLPRI：收到 OOB 数据的情况        紧急
 - EPOLLRDHUP：断开连接或半关闭的情况，这在边缘触发方式下非常有用
 - EPOLLERR：发生错误的情况
 - EPOLLET：以边缘触发的方式得到事件通知
@@ -166,7 +166,7 @@ int epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout)
 epfd : 表示事件发生监视范围的 epoll 例程的文件描述符
 events : 保存发生事件的文件描述符集合的结构体地址值
 maxevents : 第二个参数中可以保存的最大事件数
-timeout : 以 1/1000 秒为单位的等待时间，传递 -1 时，一直等待直到发生事件
+timeout : 以 1/1000 秒（那不就是毫秒吗）为单位的等待时间，传递 -1 时，一直等待直到发生事件
 */
 ```
 
@@ -239,7 +239,7 @@ select 和 epoll 的区别：
 
 - [echo_EPLTserv.c](https://github.com/riba2534/TCP-IP-NetworkNote/blob/master/ch17/echo_EPLTserv.c)
 
-上面的代码把调用 read 函数时使用的缓冲大小缩小到了 4 个字节，插入了验证 epoll_wait 调用次数的验证函数。减少缓冲大小是为了阻止服务器端一次性读取接收的数据。换言之，调用 read 函数后，输入缓冲中仍有数据要读取，而且会因此注册新的事件并从 epoll_wait 函数返回时将循环输出「return epoll_wait」字符串。
+上面的代码把调用 read 函数时使用的缓冲大小缩小到了 2 个字节，插入了验证 epoll_wait 调用次数的验证函数。减少缓冲大小是为了阻止服务器端一次性读取接收的数据。换言之，调用 read 函数后，输入缓冲中仍有数据要读取，而且会因此注册新的事件并从 epoll_wait 函数返回时将循环输出「return epoll_wait」字符串。
 
 编译运行:
 
@@ -252,7 +252,7 @@ gcc echo_EPLTserv.c -o serv
 
 ![](https://i.loli.net/2019/02/01/5c540825ae415.png)
 
-从结果可以看出，每当收到客户端数据时，都回注册该事件，并因此调用 epoll_wait 函数。
+从结果可以看出，每当收到客户端数据时，都会注册该事件，并因此调用 epoll_wait 函数。
 
 下面的代码是修改后的边缘触发方式的代码，仅仅是把上面的代码改为：
 
@@ -284,7 +284,7 @@ gcc echo_EDGEserv.c -o serv
 - 通过 errno 变量验证错误原因
 - 为了完成非阻塞（Non-blocking）I/O ，更改了套接字特性。
 
-Linux 套接字相关函数一般通过 -1 通知发生了错误。虽然知道发生了错误，但仅凭这些内容无法得知产生错误的原因。因此，为了在发生错误的时候提额外的信息，Linux 声明了如下全局变量：
+Linux 套接字相关函数一般通过 -1 通知发生了错误。虽然知道发生了错误，但仅凭这些内容无法得知产生错误的原因。因此，为了在发生错误的时候提供额外的信息，Linux 声明了如下全局变量：
 
 ```c
 int errno;

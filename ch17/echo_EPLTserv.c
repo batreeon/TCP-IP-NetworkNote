@@ -68,15 +68,18 @@ int main(int argc, char *argv[])
             }
             else //是客户端套接字时
             {
+                // buf只有两个字节大小，因此若消息过长，则需要多次读取
                 str_len = read(ep_events[i].data.fd, buf, BUF_SIZE);
                 if (str_len == 0)
+                // 断开连接
                 {
                     epoll_ctl(epfd, EPOLL_CTL_DEL, ep_events[i].data.fd, NULL); //从epoll中删除套接字
                     close(ep_events[i].data.fd);
                     printf("closed client : %d \n", ep_events[i].data.fd);
                 }
                 else
-                {
+                {   
+                    // 边缘触发，长消息会一直读然后写给客户端，直到写完
                     write(ep_events[i].data.fd, buf, str_len);
                 }
             }
