@@ -44,6 +44,7 @@ int main(int argc, char *argv[])
             break;
 
         write(sock, message, strlen(message));
+        // 只有写之后，才会读
         str_len = read(sock, message, BUF_SIZE - 1);
         message[str_len] = 0;
         printf("Message from server: %s", message);
