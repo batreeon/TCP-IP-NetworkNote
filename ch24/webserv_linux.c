@@ -53,6 +53,7 @@ int main(int argc, char *argv[])
 
 void *request_handler(void *arg)
 {
+    // 客户端套接字
     int clnt_sock = *((int *)arg);
     char req_line[SMALL_BUF];
     FILE *clnt_read;
@@ -64,6 +65,7 @@ void *request_handler(void *arg)
 
     clnt_read = fdopen(clnt_sock, "r");
     clnt_write = fdopen(dup(clnt_sock), "w");
+    // 从客户端套接字中读取请求
     fgets(req_line, SMALL_BUF, clnt_read);
     if (strstr(req_line, "HTTP/") == NULL)
     {
@@ -72,8 +74,12 @@ void *request_handler(void *arg)
         fclose(clnt_write);
         return;
     }
+    // 获取用" "和"/"分割的子字符串
+    // 请求方法
     strcpy(method, strtok(req_line, " /"));
+    // 请求文件名
     strcpy(file_name, strtok(NULL, " /"));
+    // content_type
     strcpy(ct, content_type(file_name));
     if (strcmp(method, "GET") != 0)
     {
@@ -123,6 +129,7 @@ char *content_type(char *file)
     char file_name[SMALL_BUF];
     strcpy(file_name, file);
     strtok(file_name, ".");
+    // 获取.后面的文件扩展名
     strcpy(extension, strtok(NULL, "."));
 
     if (!strcmp(extension, "html") || !strcmp(extension, "htm"))
