@@ -2,7 +2,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <pthread.h>
-#define NUM_THREAD 100
+#define NUM_THREAD 10
 
 void *thread_inc(void *arg);
 void *thread_des(void *arg);
@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
     pthread_t thread_id[NUM_THREAD];
     int i;
 
-    printf("sizeof long long: %d \n", sizeof(long long));
+    printf("sizeof long long: %ld \n", sizeof(long long));
     for (i = 0; i < NUM_THREAD; i++)
     {
         if (i % 2)

@@ -8,6 +8,7 @@ static sem_t sem_one;
 static sem_t sem_two;
 static int num;
 
+// 使用两个信号量可以保证两个线程交替进行，如果只使用一个信号量可能会导致两个线程竞争，可能导致无法交替，即同一个线程连续两次抢到运行权
 int main(int argc, char const *argv[])
 {
     pthread_t id_t1, id_t2;
@@ -34,7 +35,7 @@ void *read(void *arg)
 
         sem_wait(&sem_two);
         scanf("%d", &num);
-        sem_post(&sem_one);
+        sem_post(&sem_two);
     }
     return NULL;
 }
@@ -43,7 +44,7 @@ void *accu(void *arg)
     int sum = 0, i;
     for (i = 0; i < 5; i++)
     {
-        sem_wait(&sem_one);
+        sem_wait(&sem_two);
         sum += num;
         sem_post(&sem_two);
     }

@@ -31,6 +31,7 @@ int main(int argc, char *argv[])
     }
 
     pthread_mutex_init(&mutx, NULL); //创建互斥锁
+
     serv_sock = socket(PF_INET, SOCK_STREAM, 0);
 
     memset(&serv_adr, 0, sizeof(serv_adr));
@@ -46,8 +47,10 @@ int main(int argc, char *argv[])
     while (1)
     {
         clnt_adr_sz = sizeof(clnt_adr);
+        // 客户端套接字
         clnt_sock = accept(serv_sock, (struct sockaddr *)&clnt_adr, &clnt_adr_sz);
 
+        // 写clnt_socks
         pthread_mutex_lock(&mutx);          //上锁
         clnt_socks[clnt_cnt++] = clnt_sock; //写入新连接
         pthread_mutex_unlock(&mutx);        //解锁
@@ -66,6 +69,7 @@ void *handle_clnt(void *arg)
     int str_len = 0, i;
     char msg[BUF_SIZE];
 
+    // 只有断开连接的时候read才会返回0，因为客户端会发过来EOF
     while ((str_len = read(clnt_sock, msg, sizeof(msg))) != 0)
         send_msg(msg, str_len);
     //接收到消息为0，代表当前客户端已经断开连接
@@ -74,6 +78,8 @@ void *handle_clnt(void *arg)
     {
         if (clnt_sock == clnt_socks[i])
         {
+            // 这一句为什么没有打印？？？
+            printf("del sock: %d", clnt_sock);
             while (i++ < clnt_cnt - 1)
                 clnt_socks[i] = clnt_socks[i + 1];
             break;
